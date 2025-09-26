@@ -2,34 +2,61 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>EPSG:32755 to EPSG:4326 Converter</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+  <title>UTM (EPSG:32755) to Map Viewer</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <style>
+    #map { height: 400px; width: 100%; margin-top: 1em; }
+    body { font-family: sans-serif; }
+    label { margin-right: 1em; }
+  </style>
 </head>
 <body>
-  <h2>UTM (EPSG:32755) to Lat/Lon (EPSG:4326) Converter</h2>
+  <h2>UTM (EPSG:32755) to Map Viewer</h2>
   <form id="coordForm">
     <label for="easting">Easting:</label>
-    <input type="number" id="easting" required><br>
+    <input type="number" id="easting" required value="500000"><br>
     <label for="northing">Northing:</label>
-    <input type="number" id="northing" required><br>
-    <button type="submit">Convert</button>
+    <input type="number" id="northing" required value="5200000"><br>
+    <button type="submit">Show on Map</button>
   </form>
-  <div id="result"></div>
+  <div id="map"></div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/proj4js/2.8.0/proj4.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
     // Define projections
     proj4.defs("EPSG:32755","+proj=utm +zone=55 +south +datum=WGS84 +units=m +no_defs");
     const utm = "EPSG:32755";
     const wgs84 = "EPSG:4326";
 
+    function utmToLatLon(easting, northing) {
+      return proj4(utm, wgs84, [easting, northing]);
+    }
+
+    // Default location: somewhere in Tasmania
+    const defaultEasting = 500000;
+    const defaultNorthing = 5200000;
+
+    // Convert default UTM to lat/lon
+    const [defaultLon, defaultLat] = utmToLatLon(defaultEasting, defaultNorthing);
+
+    // Initialize Leaflet map
+    const map = L.map('map').setView([defaultLat, defaultLon], 13);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let marker = L.marker([defaultLat, defaultLon]).addTo(map);
+
     document.getElementById('coordForm').onsubmit = function(e) {
       e.preventDefault();
       const easting = parseFloat(document.getElementById('easting').value);
       const northing = parseFloat(document.getElementById('northing').value);
 
-      // Transform coordinates
-      const [lon, lat] = proj4(utm, wgs84, [easting, northing]);
-      document.getElementById('result').innerHTML = 
-        `Longitude: ${lon.toFixed(6)}, Latitude: ${lat.toFixed(6)}`;
+      const [lon, lat] = utmToLatLon(easting, northing);
+
+      map.setView([lat, lon], 13);
+      marker.setLatLng([lat, lon]);
     };
   </script>
 </body>
