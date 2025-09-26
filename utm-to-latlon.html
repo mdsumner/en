@@ -5,7 +5,7 @@
   <title>UTM (EPSG:32755) to Map Viewer</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    #map { height: 400px; width: 100%; margin-top: 1em; }
+    #map { height: 1000px; width: 100%; margin-top: 1em; }
     body { font-family: sans-serif; }
     label { margin-right: 1em; }
   </style>
@@ -14,9 +14,9 @@
   <h2>UTM (EPSG:32755) to Map Viewer</h2>
   <form id="coordForm">
     <label for="easting">Easting:</label>
-    <input type="number" id="easting" required value="500000"><br>
+    <input type="number" id="easting" required value="521230"><br>
     <label for="northing">Northing:</label>
-    <input type="number" id="northing" required value="5200000"><br>
+    <input type="number" id="northing" required value="5247640"><br>
     <button type="submit">Show on Map</button>
   </form>
   <div id="map"></div>
@@ -34,14 +34,14 @@
     }
 
     // Default location: somewhere in Tasmania
-    const defaultEasting = 500000;
-    const defaultNorthing = 5200000;
+    const defaultEasting = 521230;
+    const defaultNorthing = 5247640;
 
     // Convert default UTM to lat/lon
     const [defaultLon, defaultLat] = utmToLatLon(defaultEasting, defaultNorthing);
 
     // Initialize Leaflet map
-    const map = L.map('map').setView([defaultLat, defaultLon], 13);
+    const map = L.map('map').setView([defaultLat, defaultLon], 17);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '© OpenStreetMap contributors'
     }).addTo(map);
@@ -55,7 +55,7 @@
 
       const [lon, lat] = utmToLatLon(easting, northing);
 
-      map.setView([lat, lon], 13);
+      map.setView([lat, lon], 17);
       marker.setLatLng([lat, lon]);
     };
   </script>
